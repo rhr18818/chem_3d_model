@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Chemical Structure Visualizer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="card-title text-center mb-4">
+                    <i class="fas fa-atom text-primary me-2"></i>
+                    Chemical Structure Visualizer
+                </h1>
+                <p class="text-center text-muted mb-4">
+                    Enter a SMILES string to generate an interactive 3D visualization of the molecule
+                </p>
+                
+                <form action="{{ url_for('visualize') }}" method="post" id="molecule-form">
+                    <div class="mb-3">
+                        <label for="smiles" class="form-label">SMILES String</label>
+                        <input type="text" class="form-control" id="smiles" name="smiles" 
+                               placeholder="e.g., C(Cl)Cl for dichloromethane" required>
+                        <div class="form-text">
+                            <a href="https://en.wikipedia.org/wiki/Simplified_molecular-input_line-entry_system" 
+                               target="_blank">What is SMILES?</a>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="name" class="form-label">Molecule Name (optional)</label>
+                        <input type="text" class="form-control" id="name" name="name" 
+                               placeholder="e.g., Dichloromethane">
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-cube me-2"></i>Visualize Molecule
+                        </button>
+                    </div>
+                </form>
+                
+                <hr class="my-4">
+                
+                <div class="text-center">
+                    <h5>Examples</h5>
+                    <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+                        <button class="btn btn-outline-primary example-btn" data-smiles="C" data-name="Methane">
+                            Methane
+                        </button>
+                        <button class="btn btn-outline-primary example-btn" data-smiles="CCO" data-name="Ethanol">
+                            Ethanol
+                        </button>
+                        <button class="btn btn-outline-primary example-btn" data-smiles="c1ccccc1" data-name="Benzene">
+                            Benzene
+                        </button>
+                        <button class="btn btn-outline-primary example-btn" data-smiles="CC(=O)O" data-name="Acetic Acid">
+                            Acetic Acid
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-info-circle text-info me-2"></i>About This Project
+                </h5>
+                <p class="card-text">
+                    This tool allows you to visualize chemical structures in 3D using SMILES notation. 
+                    The visualization is powered by RDKit for cheminformatics and 3Dmol.js for interactive 3D rendering.
+                </p>
+                <div class="row mt-3">
+                    <div class="col-md-4 text-center">
+                        <i class="fas fa-cube fa-3x text-primary mb-2"></i>
+                        <h6>3D Visualization</h6>
+                        <p class="small">Interactive molecular models with rotation and zoom</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <i class="fas fa-palette fa-3x text-success mb-2"></i>
+                        <h6>Color Coding</h6>
+                        <p class="small">Atom-specific colors and bond type highlighting</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <i class="fas fa-save fa-3x text-warning mb-2"></i>
+                        <h6>Save & Share</h6>
+                        <p class="small">Save your visualizations and share with others</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle example buttons
+        const exampleButtons = document.querySelectorAll('.example-btn');
+        exampleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('smiles').value = this.dataset.smiles;
+                document.getElementById('name').value = this.dataset.name;
+            });
+        });
+    });
+</script>
+{% endblock %}

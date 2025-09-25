@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}{{ molecule.name }} - Chemical Structure Visualizer{% endblock %}
+
+{% block head %}
+<style>
+    #viewer {
+        width: 100%;
+        height: 500px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        position: relative;
+    }
+    
+    .molecule-info {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+    }
+    
+    .angle-item {
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .angle-item:last-child {
+        border-bottom: none;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin-right: 10px;
+        border: 1px solid #ddd;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">{{ molecule.name }}</h4>
+                <div>
+                    <button id="reset-view" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-sync-alt me-1"></i> Reset View
+                    </button>
+                    <button id="toggle-spin" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-play me-1"></i> Spin
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div id="viewer"></div>
+                <div id="fallback-image" class="text-center p-4" style="display: none;">
+                    <img src="{{ fallback_image }}" class="img-fluid" alt="{{ molecule.name }}">
+                    <p class="mt-2 text-muted">3D visualization failed. Showing 2D representation.</p>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <button id="save-molecule" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Save
+                        </button>
+                        <button id="download-image" class="btn btn-outline-primary">
+                            <i class="fas fa-download me-1"></i> Download Image
+                        </button>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-plus me-1"></i> New Molecule
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Molecule Information
+                </h5>
+            </div>
+            <div class="card-body molecule-info">
+                <div class="mb-3">
+                    <strong>Name:</strong> {{ molecule.name }}
+                </div>
+                <div class="mb-3">
+                    <strong>Formula:</strong> {{ molecule.formula }}
+                </div>
+                <div class="mb-3">
+                    <strong>SMILES:</strong>
+                    <div class="text-break">{{ molecule.smiles }}</div>
+                </div>
+                <div>
+                    <strong>Created:</strong> {{ molecule.created_at.strftime('%Y-%m-%d %H:%M') }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-palette me-2"></i>Color Legend
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6>Atoms</h6>
+                {% for symbol, color in atom_colors.items() %}
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: {{ color }};"></div>
+                    <span>{{ symbol }}</span>
+                </div>
+                {% endfor %}
+                
+                <h6 class="mt-3">Bonds</h6>
+                {% for bond_type, color in bond_colors.items() %}
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: {{ color }};"></div>
+                    <span>{{ bond_type.name.title() }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-ruler-combined me-2"></i>Bond Angles
+                </h5>
+            </div>
+            <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                {% if bond_angles %}
+                    {% for angle in bond_angles %}
+                    <div class="angle-item">
+                        Angle ({{ angle[0] }}-{{ angle[1] }}-{{ angle[2] }}): {{ angle[3]|round(1) }}°
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No bond angles calculated</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Wait for 3Dmol to be fully loaded
+    function initializeViewer() {
+        if (typeof $3Dmol === 'undefined') {
+            console.log('3Dmol not loaded yet, retrying...');
+            setTimeout(initializeViewer, 100);
+            return;
+        }
+        
+        console.log('Initializing 3Dmol viewer...');
+        
+        // Initialize 3Dmol viewer
+        const viewer = $3Dmol.createViewer("viewer", {
+            backgroundColor: 'white',
+            antialias: true
+        });
+        
+        // Show loading message
+        viewer.addLabel("Loading molecule...", {
+            position: {x:0, y:0, z:0},
+            backgroundColor: 'blue',
+            fontColor: 'white'
+        });
+        viewer.render();
+        
+        // Fetch molecule data
+        fetch(`/api/molecule/{{ molecule.id }}/data`)
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Molecule data received:', data);
+                
+                // Clear the loading message
+                viewer.clear();
+                
+                // Check if SDF data exists
+                if (!data.sdf) {
+                    throw new Error('No SDF data received');
+                }
+                
+                // Add the molecule model
+                viewer.addModel(data.sdf, "sdf");
+                
+                // Apply styling
+                viewer.setStyle({}, {
+                    stick: {
+                        radius: 0.15,
+                        colorscheme: 'Jmol'
+                    },
+                    sphere: {
+                        radius: 0.3
+                    }
+                });
+                
+                // Zoom to fit and render
+                viewer.zoomTo();
+                viewer.render();
+                
+                // Start spinning automatically
+                viewer.spin(true);
+                document.getElementById('toggle-spin').innerHTML = 
+                    '<i class="fas fa-pause me-1"></i> Pause';
+                    
+                console.log('3D visualization loaded successfully');
+            })
+            .catch(error => {
+                console.error('Error loading molecule data:', error);
+                viewer.clear();
+                viewer.addLabel(`Error: ${error.message}`, {
+                    position: {x:0, y:0, z:0},
+                    backgroundColor: 'red',
+                    fontColor: 'white'
+                });
+                viewer.render();
+                
+                // Show fallback after a delay
+                setTimeout(() => {
+                    document.getElementById('viewer').style.display = 'none';
+                    document.getElementById('fallback-image').style.display = 'block';
+                }, 2000);
+            });
+        
+        // Reset view button
+        document.getElementById('reset-view').addEventListener('click', function() {
+            viewer.zoomTo();
+            viewer.render();
+        });
+        
+        // Toggle spin button
+        let isSpinning = true;
+        document.getElementById('toggle-spin').addEventListener('click', function() {
+            isSpinning = !isSpinning;
+            viewer.spin(isSpinning);
+            this.innerHTML = isSpinning ? 
+                '<i class="fas fa-pause me-1"></i> Pause' : 
+                '<i class="fas fa-play me-1"></i> Spin';
+        });
+        
+        // Save molecule button
+        document.getElementById('save-molecule').addEventListener('click', function() {
+            // Create a temporary notification
+            const notification = document.createElement('div');
+            notification.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3';
+            notification.innerHTML = `
+                Molecule saved successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.body.appendChild(notification);
+            
+            // Auto-dismiss after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        });
+        
+        // Download image button
+        document.getElementById('download-image').addEventListener('click', function() {
+            viewer.pngURI().then(function(pngURI) {
+                const link = document.createElement('a');
+                link.href = pngURI;
+                link.download = '{{ molecule.name }}.png';
+                link.click();
+            });
+        });
+    }
+    
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing viewer...');
+        initializeViewer();
+    });
+    
+    // Add a timeout to check if 3D visualization loaded
+    setTimeout(() => {
+        const viewerContent = document.querySelector('#viewer canvas');
+        if (!viewerContent) {
+            console.warn('3D visualization failed to load after 10 seconds, showing fallback');
+            // 3D visualization failed, show fallback
+            const viewerElement = document.getElementById('viewer');
+            const fallbackElement = document.getElementById('fallback-image');
+            if (viewerElement && fallbackElement) {
+                viewerElement.style.display = 'none';
+                fallbackElement.style.display = 'block';
+            }
+        }
+    }, 10000); // Increased timeout to 10 seconds
+</script>
+
+{% endblock %}
