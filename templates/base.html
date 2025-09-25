@@ -18,7 +18,8 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    <!-- Navigation -->
+    <!-- Navigation (hidden for visualize page) -->
+    {% if not request.endpoint == 'visualize_molecule' %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
@@ -39,8 +40,10 @@
             </div>
         </div>
     </nav>
+    {% endif %}
 
     <!-- Flash Messages -->
+    {% if not request.endpoint == 'visualize_molecule' %}
     <div class="container mt-3">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -53,26 +56,30 @@
             {% endif %}
         {% endwith %}
     </div>
+    {% endif %}
 
     <!-- Main Content -->
-    <main class="container my-4">
-        {% block content %}{% endblock %}
-    </main>
+    {% if request.endpoint != 'visualize_molecule' %}<main class="container my-4">{% endif %}
+    {% block content %}{% endblock %}
+    {% if request.endpoint != 'visualize_molecule' %}</main>{% endif %}
 
     <!-- Footer -->
+        <!-- Footer (hidden for visualize page) -->
+    {% if not request.endpoint == 'visualize_molecule' %}
     <footer class="bg-dark text-white py-4 mt-5">
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
                     <h5>Chemical Structure Visualizer</h5>
-                    <p class="mb-0">Interactive 3D visualization of chemical structures</p>
+                    <p class="mb-0">Powered by RDKit and 3Dmol.js</p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <p class="mb-0">Created with Flask, RDKit, and 3Dmol.js</p>
+                    <p class="mb-0">&copy; 2024 ChemViz. All rights reserved.</p>
                 </div>
             </div>
         </div>
     </footer>
+    {% endif %}
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
