@@ -11,45 +11,109 @@
         padding: 0;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
-    
+
+    /* --- MODIFIED STYLES --- */
     .main-container {
-        display: flex;
+        position: relative; /* Changed from flex for easier positioning */
         height: 100vh;
         overflow: hidden;
+        /* padding: 20px; Add padding to the container */
+        box-sizing: border-box; /* Ensures padding is included in height/width */
     }
-    
+
     .sidebar {
+        position: absolute; /* Position sidebars absolutely within the main container */
+        top: 20px;
+        height: calc(100vh - 40px); /* Adjust height to fit within padding */
         width: 280px;
         background-color: #2a2a2a;
         padding: 20px;
         overflow-y: auto;
-        border-right: 1px solid #404040;
+        border: 1px solid #404040;
+        border-radius: 12px; /* Rounded corners */
+        z-index: 10;
+        transition: transform 0.3s ease-in-out; /* Smooth transition for toggling */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5); /* Optional: nice shadow effect */
     }
-    
+
+    /* Position left and right sidebars */
+    #left-sidebar {
+        left: 20px;
+    }
+
+    #right-sidebar {
+        right: 20px;
+    }
+
+    /* Style for when sidebars are hidden */
+    #left-sidebar.hidden {
+        transform: translateX(calc(-100% - 20px));
+    }
+
+    #right-sidebar.hidden {
+        transform: translateX(calc(100% + 20px));
+    }
+
     .viewer-container {
-        flex: 1;
+        width: 100%;
+        height: 100%; /* Make it fill the main container */
         position: relative;
         background-color: #000000;
+        border-radius: 12px; /* Match the sidebar rounding */
     }
-    
+
     #viewer {
         width: 100%;
-        height: 100vh;
+        height: 100%;
         background-color: #000000;
         position: relative;
+        border-radius: 12px; /* Ensure viewer canvas also has rounded corners */
     }
-    
+
+    /* New styles for toggle buttons */
+    .sidebar-toggle {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: #404040;
+        color: #ffffff;
+        border: 1px solid #555;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s;
+    }
+
+    .sidebar-toggle:hover {
+        background-color: #7c3aed;
+    }
+
+    .sidebar-toggle.left {
+        left: 10px;
+    }
+
+    .sidebar-toggle.right {
+        right: 10px;
+    }
+    /* --- END OF MODIFIED STYLES --- */
+
+    /* --- EXISTING STYLES (Unchanged) --- */
     .sidebar h3 {
         color: #ffffff;
         font-size: 18px;
         margin-bottom: 15px;
         font-weight: 600;
     }
-    
+
     .display-options {
         margin-bottom: 30px;
     }
-    
+
     .display-option {
         background-color: #404040;
         border: none;
@@ -61,30 +125,30 @@
         font-size: 14px;
         transition: all 0.2s;
     }
-    
+
     .display-option.active {
         background-color: #7c3aed;
     }
-    
+
     .display-option:hover {
         background-color: #5a5a5a;
     }
-    
+
     .display-option.active:hover {
         background-color: #8b5cf6;
     }
-    
+
     .atom-legend {
         margin-bottom: 30px;
     }
-    
+
     .legend-item {
         display: flex;
         align-items: center;
         margin-bottom: 8px;
         color: #cccccc;
     }
-    
+
     .legend-color {
         width: 16px;
         height: 16px;
@@ -92,31 +156,31 @@
         margin-right: 12px;
         border: 1px solid #555;
     }
-    
+
     .properties-section {
         background-color: #333333;
         border-radius: 8px;
         padding: 15px;
         margin-bottom: 20px;
     }
-    
+
     .property-item {
         margin-bottom: 10px;
         color: #cccccc;
     }
-    
+
     .property-label {
         color: #888888;
         font-size: 12px;
         text-transform: uppercase;
         margin-bottom: 2px;
     }
-    
+
     .property-value {
         color: #ffffff;
         font-weight: 500;
     }
-    
+
     .search-box {
         background-color: #404040;
         border: 1px solid #555555;
@@ -127,22 +191,22 @@
         margin-bottom: 20px;
         font-size: 14px;
     }
-    
+
     .search-box::placeholder {
         color: #888888;
     }
-    
+
     .search-box:focus {
         outline: none;
         border-color: #7c3aed;
     }
-    
+
     .control-buttons {
         display: flex;
         gap: 10px;
         margin-bottom: 20px;
     }
-    
+
     .control-btn {
         background-color: #404040;
         border: none;
@@ -153,76 +217,17 @@
         font-size: 12px;
         transition: all 0.2s;
     }
-    
+
     .control-btn:hover {
         background-color: #5a5a5a;
     }
-    
+
     .navbar {
         display: none;
     }
-    
+
     .container-fluid {
         padding: 0;
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .main-container {
-            flex-direction: column;
-        }
-        
-        .sidebar {
-            width: 100%;
-            height: auto;
-            border-right: none;
-            border-bottom: 1px solid #404040;
-            padding: 15px;
-        }
-        
-        .viewer-container {
-            height: 60vh;
-        }
-        
-        #viewer {
-            height: 60vh;
-        }
-        
-        .display-options {
-            margin-bottom: 20px;
-        }
-        
-        .properties-section {
-            margin-bottom: 15px;
-        }
-    }
-    
-    @media (max-width: 480px) {
-        .sidebar {
-            padding: 10px;
-        }
-        
-        .display-option {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-        
-        .control-btn {
-            padding: 6px 10px;
-            font-size: 11px;
-        }
-        
-        .property-item {
-            margin-bottom: 8px;
-        }
-        
-        .viewer-container {
-            height: 50vh;
-        }
-        
-        #viewer {
-            height: 50vh;
-        }
     }
 </style>
 {% endblock %}
@@ -230,7 +235,7 @@
 {% block content %}
 <div class="main-container">
     <!-- Left Sidebar -->
-    <div class="sidebar">
+    <div class="sidebar" id="left-sidebar">
         <!-- Search -->
         <input type="text" class="search-box" placeholder="Search molecule by name... Ctrl+K">
         
@@ -251,8 +256,6 @@
             </button>
         </div>
         
-        
-        
         <!-- Additional Controls -->
         <div class="control-buttons">
             <button id="save-molecule" class="control-btn">
@@ -266,13 +269,25 @@
     
     <!-- Main Viewer -->
     <div class="viewer-container">
+        <!-- Add Left Sidebar Toggle Button -->
+        <button id="toggle-left-sidebar" class="sidebar-toggle left">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        
         <div id="viewer"></div>
         <div id="fallback-image" class="text-center p-4" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
             <img src="{{ fallback_image }}" class="img-fluid" alt="{{ molecule.name }}">
             <p class="mt-2 text-muted">3D visualization failed. Showing 2D representation.</p>
         </div>
+        
+        <!-- Add Right Sidebar Toggle Button -->
+        <button id="toggle-right-sidebar" class="sidebar-toggle right">
+            <i class="fas fa-chevron-right"></i>
+        </button>
     </div>
-    <div class="sidebar">
+    
+    <!-- Right Sidebar -->
+    <div class="sidebar" id="right-sidebar">
         <!-- Atom Legend -->
         <div class="atom-legend">
             <h3>Atom Legend</h3>
@@ -327,7 +342,6 @@
     let viewer;
     let currentDisplayMode = 'ball-stick';
     
-    // Wait for 3Dmol to be fully loaded
     function initializeViewer() {
         if (typeof $3Dmol === 'undefined') {
             console.log('3Dmol not loaded yet, retrying...');
@@ -337,13 +351,12 @@
         
         console.log('Initializing 3Dmol viewer...');
         
-        // Initialize 3Dmol viewer with black background
         viewer = $3Dmol.createViewer("viewer", {
             backgroundColor: 'black',
-            antialias: true
+            antialias: true,
+            preserveDrawingBuffer: true 
         });
         
-        // Show loading message
         viewer.addLabel("Loading molecule...", {
             position: {x:0, y:0, z:0},
             backgroundColor: 'rgba(124, 58, 237, 0.8)',
@@ -352,7 +365,6 @@
         });
         viewer.render();
         
-        // Fetch molecule data
         fetch(`/api/molecule/{{ molecule.id }}/data`)
             .then(response => {
                 console.log('Response status:', response.status);
@@ -363,29 +375,18 @@
             })
             .then(data => {
                 console.log('Molecule data received:', data);
-                
-                // Clear the loading message
                 viewer.clear();
                 
-                // Check if SDF data exists
                 if (!data.sdf) {
                     throw new Error('No SDF data received');
                 }
                 
-                // Add the molecule model
                 viewer.addModel(data.sdf, "sdf");
-                
-                // Apply initial styling (ball-and-stick)
                 applyDisplayMode(currentDisplayMode);
-                
-                // Zoom to fit and render
                 viewer.zoomTo();
                 viewer.render();
-                
-                // Start spinning automatically
                 viewer.spin(true);
                 document.getElementById('toggle-spin').innerHTML = '<i class="fas fa-pause"></i> Spin';
-                    
                 console.log('3D visualization loaded successfully');
             })
             .catch(error => {
@@ -398,7 +399,6 @@
                 });
                 viewer.render();
                 
-                // Show fallback after a delay
                 setTimeout(() => {
                     document.getElementById('viewer').style.display = 'none';
                     document.getElementById('fallback-image').style.display = 'block';
@@ -408,34 +408,18 @@
         setupEventListeners();
     }
     
-    // Apply different display modes
     function applyDisplayMode(mode) {
         if (!viewer) return;
         
         if (mode === 'ball-stick') {
-            viewer.setStyle({}, {
-                stick: {
-                    radius: 0.15,
-                    colorscheme: 'Jmol'
-                },
-                sphere: {
-                    radius: 0.3,
-                    colorscheme: 'Jmol'
-                }
-            });
+            viewer.setStyle({}, { stick: { radius: 0.15, colorscheme: 'Jmol' }, sphere: { radius: 0.3, colorscheme: 'Jmol' } });
         } else if (mode === 'space-filling') {
-            viewer.setStyle({}, {
-                sphere: {
-                    radius: 1.0,
-                    colorscheme: 'Jmol'
-                }
-            });
+            viewer.setStyle({}, { sphere: { radius: 1.0, colorscheme: 'Jmol' } });
         }
         
         viewer.render();
     }
     
-    // Setup all event listeners
     function setupEventListeners() {
         // Display mode buttons
         document.getElementById('ball-stick').addEventListener('click', function() {
@@ -466,46 +450,52 @@
             if (viewer) {
                 isSpinning = !isSpinning;
                 viewer.spin(isSpinning);
-                this.innerHTML = isSpinning ? 
-                    '<i class="fas fa-pause"></i> Spin' : 
-                    '<i class="fas fa-play"></i> Spin';
+                this.innerHTML = isSpinning ? '<i class="fas fa-pause"></i> Spin' : '<i class="fas fa-play"></i> Spin';
             }
         });
         
         // Save molecule button
         document.getElementById('save-molecule').addEventListener('click', function() {
-            // Create a modern notification
             const notification = document.createElement('div');
             notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background-color: #10b981;
-                color: white;
-                padding: 12px 20px;
-                border-radius: 8px;
-                font-size: 14px;
-                z-index: 9999;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            `;
+                position: fixed; top: 20px; right: 20px; background-color: #10b981;
+                color: white; padding: 12px 20px; border-radius: 8px; font-size: 14px;
+                z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.3);`;
             notification.textContent = 'Molecule saved successfully!';
             document.body.appendChild(notification);
-            
-            // Auto-dismiss after 3 seconds
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
+            setTimeout(() => { notification.remove(); }, 3000);
         });
         
         // Download image button
+        // Download image button
         document.getElementById('download-image').addEventListener('click', function() {
             if (viewer) {
-                viewer.pngURI().then(function(pngURI) {
-                    const link = document.createElement('a');
-                    link.href = pngURI;
-                    link.download = '{{ molecule.name }}.png';
-                    link.click();
-                });
+                try {
+                    // viewer.pngURI() returns the data URI string directly. It is NOT a promise.
+                    const pngURI = viewer.pngURI();
+
+                    if (pngURI) {
+                        const link = document.createElement('a');
+
+                        // Sanitize the filename to remove invalid characters
+                        const safeFilename = '{{ molecule.name }}'.replace(/[/\\?%*:|"<>]/g, '-') + '.png';
+
+                        link.href = pngURI;
+                        link.download = safeFilename;
+                        
+                        // For better compatibility, append the link to the body before clicking
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link); // Clean up the link element
+                    } else {
+                        // This case handles if pngURI() returns an empty value
+                        console.error("Failed to generate PNG URI. The canvas might be empty or an error occurred.");
+                        alert("Sorry, the image could not be generated for download.");
+                    }
+                } catch (e) {
+                    console.error("An error occurred during image generation:", e);
+                    alert("An error occurred while trying to generate the image.");
+                }
             }
         });
         
@@ -516,20 +506,42 @@
                 document.querySelector('.search-box').focus();
             }
         });
+        
+        // --- NEW: SIDEBAR TOGGLE LOGIC ---
+        const leftSidebar = document.getElementById('left-sidebar');
+        const rightSidebar = document.getElementById('right-sidebar');
+        const toggleLeftBtn = document.getElementById('toggle-left-sidebar');
+        const toggleRightBtn = document.getElementById('toggle-right-sidebar');
+
+        toggleLeftBtn.addEventListener('click', () => {
+            leftSidebar.classList.toggle('hidden');
+            // Change the icon direction for better UX
+            toggleLeftBtn.querySelector('i').classList.toggle('fa-chevron-right');
+        });
+
+        toggleRightBtn.addEventListener('click', () => {
+            rightSidebar.classList.toggle('hidden');
+            // Change the icon direction for better UX
+            toggleRightBtn.querySelector('i').classList.toggle('fa-chevron-right');
+        });
+
+        // Hide sidebars by default on page load
+        // leftSidebar.classList.add('hidden');
+        // rightSidebar.classList.add('hidden');
+        // Update the icons to their "show" state
+        toggleLeftBtn.querySelector('i').classList.add('fa-chevron-left');
+        toggleRightBtn.querySelector('i').classList.add('fa-chevron-left');
     }
     
-    // Initialize when DOM is ready
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM loaded, initializing viewer...');
         initializeViewer();
     });
     
-    // Add a timeout to check if 3D visualization loaded
     setTimeout(() => {
         const viewerContent = document.querySelector('#viewer canvas');
         if (!viewerContent) {
             console.warn('3D visualization failed to load after 10 seconds, showing fallback');
-            // 3D visualization failed, show fallback
             const viewerElement = document.getElementById('viewer');
             const fallbackElement = document.getElementById('fallback-image');
             if (viewerElement && fallbackElement) {
@@ -539,5 +551,4 @@
         }
     }, 10000);
 </script>
-
 {% endblock %}
