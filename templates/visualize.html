@@ -251,6 +251,28 @@
             </button>
         </div>
         
+        
+        
+        <!-- Additional Controls -->
+        <div class="control-buttons">
+            <button id="save-molecule" class="control-btn">
+                <i class="fas fa-save"></i> Save
+            </button>
+            <button id="download-image" class="control-btn">
+                <i class="fas fa-download"></i> Download
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Viewer -->
+    <div class="viewer-container">
+        <div id="viewer"></div>
+        <div id="fallback-image" class="text-center p-4" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+            <img src="{{ fallback_image }}" class="img-fluid" alt="{{ molecule.name }}">
+            <p class="mt-2 text-muted">3D visualization failed. Showing 2D representation.</p>
+        </div>
+    </div>
+    <div class="sidebar">
         <!-- Atom Legend -->
         <div class="atom-legend">
             <h3>Atom Legend</h3>
@@ -295,25 +317,6 @@
                 <div class="property-label">IUPAC Name</div>
                 <div class="property-value">{{ molecule.name }}</div>
             </div>
-        </div>
-        
-        <!-- Additional Controls -->
-        <div class="control-buttons">
-            <button id="save-molecule" class="control-btn">
-                <i class="fas fa-save"></i> Save
-            </button>
-            <button id="download-image" class="control-btn">
-                <i class="fas fa-download"></i> Download
-            </button>
-        </div>
-    </div>
-    
-    <!-- Main Viewer -->
-    <div class="viewer-container">
-        <div id="viewer"></div>
-        <div id="fallback-image" class="text-center p-4" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-            <img src="{{ fallback_image }}" class="img-fluid" alt="{{ molecule.name }}">
-            <p class="mt-2 text-muted">3D visualization failed. Showing 2D representation.</p>
         </div>
     </div>
 </div>
