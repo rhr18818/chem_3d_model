@@ -1,5 +1,5 @@
 // 3Dmol viewer integration
-
+//not using currently
 class MoleculeViewer {
     constructor(containerId, options = {}) {
         this.containerId = containerId;

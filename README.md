@@ -201,6 +201,20 @@ chem_3d_model/
 
 ## 🧪 Technical Details
 
+### **Core Workflow**
+```python
+# Your core workflow:
+SMILES → RDKit (Python) → 3D Coordinates → Database → 3Dmol.js
+# This is naturally Python-centric
+```
+
+The application follows a streamlined data pipeline:
+1. **Input**: User provides SMILES string through web interface
+2. **Processing**: RDKit converts SMILES to 3D molecular structure
+3. **Storage**: Molecule data and coordinates saved to SQLite database
+4. **Visualization**: 3Dmol.js renders interactive 3D representation
+5. **Interaction**: Real-time manipulation and analysis in the browser
+
 ### **Backend Architecture**
 - **Flask Framework**: Lightweight, flexible web framework
 - **SQLAlchemy ORM**: Database abstraction and management
